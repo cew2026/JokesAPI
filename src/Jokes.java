@@ -9,7 +9,10 @@ import org.json.simple.parser.JSONParser;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+//make text box go next to the label area (change of layout)
 
 public class Jokes implements ActionListener {
     private JFrame mainFrame;
@@ -21,9 +24,9 @@ public class Jokes implements ActionListener {
     private JMenuBar mb;
     private JMenu file, edit, help;
     private JMenuItem cut, copy, paste, selectAll;
-    private JTextArea results;
+    private JTextPane results;
     private JTextArea urlTextArea;
-    private JTextArea wordTextArea;
+    private JTextPane wordTextArea;
     private int WIDTH = 400;
     private int HEIGHT = 500;
 
@@ -36,7 +39,6 @@ public class Jokes implements ActionListener {
 
     public Jokes() {
         prepareGUI();
-//        pull();
     }
 
     public void pull() {
@@ -91,7 +93,6 @@ public class Jokes implements ActionListener {
                 System.out.println(punchline);
                 punch = punchline;
 
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,7 +129,8 @@ public class Jokes implements ActionListener {
         mb.add(help);
 
 
-        results = new JTextArea("Your Jokes:");
+        results = new JTextPane();
+        results.setText("Your Jokes:");
         results.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
         mainFrame.add(mb);
 
@@ -149,16 +151,24 @@ public class Jokes implements ActionListener {
 
         inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout());
-        urlTextArea = new JTextArea("Sadness Level (1-10):");
+        urlTextArea = new JTextArea("");
         urlTextArea.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
 
-        inputPanel.add(urlTextArea, BorderLayout.NORTH);
+        inputPanel.add(urlTextArea, BorderLayout.EAST);
 
 
         keywordPanel = new JPanel();
         keywordPanel.setLayout(new BorderLayout());
-        wordTextArea = new JTextArea("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        wordTextArea = new JTextPane();
+        wordTextArea.setText("");
         wordTextArea.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
+
+        titleLabel = new JLabel("Sadness Level (1-10): ");
+        titleLabel.setLayout(new BorderLayout());
+        titleLabel.setBounds(10,10,50, HEIGHT + 100);
+
+        inputPanel.add(titleLabel, BorderLayout.NORTH);
+
 
         keywordPanel.add(wordTextArea, BorderLayout.NORTH);
         inputPanel.add(keywordPanel, BorderLayout.CENTER);
@@ -211,11 +221,17 @@ public class Jokes implements ActionListener {
             if (command.equals("Submit")) {
                 results.setText("Please Enter Your Level of Sadness");
                 pull();
-                results.setText(jokes);
+                results.setText(jokes + "\n\n");
             }
 
             if (command.equals("punchline")) {
-                results.append(punch);
+                StyleContext sc = new StyleContext();
+                final Style cwStyle = sc.addStyle("ConstantWidth", null);
+                StyleConstants.setFontFamily(cwStyle, "MainStyle");
+                StyleConstants.setForeground(cwStyle, Color.blue);
+                results.setCharacterAttributes(cwStyle, true);
+                results.setText(results.getText() + punch);
+
             }
         }
     }
