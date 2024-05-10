@@ -19,14 +19,12 @@ public class Jokes implements ActionListener {
     private JLabel headerLabel;
     private JLabel statusLabel;
     private JLabel titleLabel;
-    private JPanel inputPanel;
-    private JPanel keywordPanel;
+    private JPanel inputPanel, buttonPanel, sadnessPanel;
     private JMenuBar mb;
     private JMenu file, edit, help;
     private JMenuItem cut, copy, paste, selectAll;
     private JTextPane results;
-    private JTextArea urlTextArea;
-    private JTextPane wordTextArea;
+    private JTextArea numberTextArea;
     private int WIDTH = 400;
     private int HEIGHT = 500;
 
@@ -84,6 +82,7 @@ public class Jokes implements ActionListener {
 
             org.json.simple.JSONArray jsonArray = (org.json.simple.JSONArray) parser.parse(totalJson);
             System.out.println(jsonArray);
+            //loop through this whole thing n many times
             for (int i = 0; i < jsonArray.size(); ++i) {
                 JSONObject joke = (JSONObject) jsonArray.get(i);
                 String setup = (String) joke.get("setup");
@@ -151,27 +150,24 @@ public class Jokes implements ActionListener {
 
         inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout());
-        urlTextArea = new JTextArea("");
-        urlTextArea.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
-
-        inputPanel.add(urlTextArea, BorderLayout.EAST);
+        numberTextArea = new JTextArea();
+        numberTextArea.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
 
 
-        keywordPanel = new JPanel();
-        keywordPanel.setLayout(new BorderLayout());
-        wordTextArea = new JTextPane();
-        wordTextArea.setText("");
-        wordTextArea.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
+        sadnessPanel = new JPanel();
+        sadnessPanel.setLayout(new BorderLayout());
+        inputPanel.add(sadnessPanel, BorderLayout.NORTH);
+
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BorderLayout());
 
         titleLabel = new JLabel("Sadness Level (1-10): ");
         titleLabel.setLayout(new BorderLayout());
         titleLabel.setBounds(10,10,50, HEIGHT + 100);
 
-        inputPanel.add(titleLabel, BorderLayout.NORTH);
-
-
-        keywordPanel.add(wordTextArea, BorderLayout.NORTH);
-        inputPanel.add(keywordPanel, BorderLayout.CENTER);
+        sadnessPanel.add(titleLabel, BorderLayout.WEST);
+        sadnessPanel.add(numberTextArea, BorderLayout.CENTER);
+        inputPanel.add(buttonPanel, BorderLayout.CENTER);
 
         mainFrame.add(inputPanel, BorderLayout.NORTH);
         mainFrame.add(scrollPane, BorderLayout.CENTER);
@@ -189,7 +185,7 @@ public class Jokes implements ActionListener {
 
         submitButton.addActionListener(new ButtonClickListener());
 
-        keywordPanel.add(submitButton, BorderLayout.CENTER);
+        buttonPanel.add(submitButton, BorderLayout.CENTER);
 
         JButton punchlineButton = new JButton("Reveal Punchline");
 
@@ -197,7 +193,7 @@ public class Jokes implements ActionListener {
 
         punchlineButton.addActionListener(new ButtonClickListener());
 
-        keywordPanel.add(punchlineButton, BorderLayout.SOUTH);
+        buttonPanel.add(punchlineButton, BorderLayout.SOUTH);
 
         mainFrame.setVisible(true);
 
@@ -220,6 +216,7 @@ public class Jokes implements ActionListener {
 
             if (command.equals("Submit")) {
                 results.setText("Please Enter Your Level of Sadness");
+                int n = Integer.valueOf( numberTextArea.getText() );
                 pull();
                 results.setText(jokes + "\n\n");
             }
