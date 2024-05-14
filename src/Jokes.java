@@ -30,8 +30,10 @@ public class Jokes implements ActionListener {
 
     public String totalJson = "";
 
-    public String jokes = "";
-    public String punch = "";
+    public String[] jokes;
+    public String[] punch;
+
+    public int n;
 
 
 
@@ -82,17 +84,16 @@ public class Jokes implements ActionListener {
 
             org.json.simple.JSONArray jsonArray = (org.json.simple.JSONArray) parser.parse(totalJson);
             System.out.println(jsonArray);
-            //loop through this whole thing n many times
-            for (int i = 0; i < jsonArray.size(); ++i) {
-                JSONObject joke = (JSONObject) jsonArray.get(i);
-                String setup = (String) joke.get("setup");
-                System.out.println(setup);
-                jokes = setup;
-                String punchline = (String) joke.get("punchline");
-                System.out.println(punchline);
-                punch = punchline;
-
+                for (int i = 0; i < n; ++i) {
+                    JSONObject joke = (JSONObject) jsonArray.get(i);
+                    String setup = (String) joke.get("setup");
+                    System.out.println(setup);
+                    jokes[i] = setup;
+                    String punchline = (String) joke.get("punchline");
+                    System.out.println(punchline);
+                    punch[i] = punchline;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,7 +130,7 @@ public class Jokes implements ActionListener {
 
 
         results = new JTextPane();
-        results.setText("Your Jokes:");
+        results.setText("Your Jokes:" + "\n\n");
         results.setBounds(50, 5, WIDTH - 100, HEIGHT - 50);
         mainFrame.add(mb);
 
@@ -215,10 +216,17 @@ public class Jokes implements ActionListener {
             String command = e.getActionCommand();
 
             if (command.equals("Submit")) {
-                results.setText("Please Enter Your Level of Sadness");
-                int n = Integer.valueOf( numberTextArea.getText() );
-                pull();
-                results.setText(jokes + "\n\n");
+                if(numberTextArea.getText() == ""){
+                    results.setText("Please Enter Your Level of Sadness");
+                }else {
+                    n = Integer.valueOf(numberTextArea.getText());
+                    jokes = new String[n];
+                    punch = new String[n];
+                    pull();
+                    for (int x = 0; x < n; ++x) {
+                        results.setText(results.getText() + jokes[x] + "\n\n");
+                    }
+                }
             }
 
             if (command.equals("punchline")) {
@@ -227,7 +235,9 @@ public class Jokes implements ActionListener {
                 StyleConstants.setFontFamily(cwStyle, "MainStyle");
                 StyleConstants.setForeground(cwStyle, Color.blue);
                 results.setCharacterAttributes(cwStyle, true);
-                results.setText(results.getText() + punch);
+                for (int x = 0; x < n; ++x) {
+                    results.setText(results.getText() + punch[x] + "\n\n");
+                }
 
             }
         }
