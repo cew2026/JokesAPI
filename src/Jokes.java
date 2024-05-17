@@ -12,7 +12,9 @@ import javax.swing.*;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
-//make text box go next to the label area (change of layout)
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Jokes implements ActionListener {
     private JFrame mainFrame;
@@ -78,20 +80,19 @@ public class Jokes implements ActionListener {
     public void getJoke() {
 
         JSONParser parser = new JSONParser();
-        //System.out.println(str);
 
         try {
 
             org.json.simple.JSONArray jsonArray = (org.json.simple.JSONArray) parser.parse(totalJson);
             System.out.println(jsonArray);
-                for (int i = 0; i < n; ++i) {
-                    JSONObject joke = (JSONObject) jsonArray.get(i);
-                    String setup = (String) joke.get("setup");
-                    System.out.println(setup);
-                    jokes[i] = setup;
-                    String punchline = (String) joke.get("punchline");
-                    System.out.println(punchline);
-                    punch[i] = punchline;
+            for (int i = 0; i < n; ++i) {
+                JSONObject joke = (JSONObject) jsonArray.get(i);
+                String setup = (String) joke.get("setup");
+                System.out.println(setup);
+                jokes[i] = setup;
+                String punchline = (String) joke.get("punchline");
+                System.out.println(punchline);
+                punch[i] = punchline;
             }
 
         } catch (Exception e) {
@@ -216,9 +217,15 @@ public class Jokes implements ActionListener {
             String command = e.getActionCommand();
 
             if (command.equals("Submit")) {
-                if(numberTextArea.getText() == ""){
+                String a = numberTextArea.getText();
+                if(a == ""){
                     results.setText("Please Enter Your Level of Sadness");
-                }else {
+                } else if (errorControl(a) == true) {
+                    results.setText("Please only type in numbers 1-10");
+                } else if (Integer.valueOf(a)<1||Integer.valueOf(a)>10) {
+                    results.setText("Please only type numbers between 1-10");
+                }
+                else {
                     n = Integer.valueOf(numberTextArea.getText());
                     jokes = new String[n];
                     punch = new String[n];
@@ -230,13 +237,20 @@ public class Jokes implements ActionListener {
             }
 
             if (command.equals("punchline")) {
-                StyleContext sc = new StyleContext();
-                final Style cwStyle = sc.addStyle("ConstantWidth", null);
-                StyleConstants.setFontFamily(cwStyle, "MainStyle");
-                StyleConstants.setForeground(cwStyle, Color.blue);
-                results.setCharacterAttributes(cwStyle, true);
-                for (int x = 0; x < n; ++x) {
-                    results.setText(results.getText() + punch[x] + "\n\n");
+                String a = numberTextArea.getText();
+                if(a == ""){
+                    results.setText("Please Enter Your Level of Sadness and Hit Submit Before Clicking Reveal Punchline");
+                } else {
+                    StyleContext sc = new StyleContext();
+                    final Style cwStyle = sc.addStyle("ConstantWidth", null);
+                    StyleConstants.setFontFamily(cwStyle, "MainStyle");
+                    StyleConstants.setForeground(cwStyle, Color.blue);
+                    results.setCharacterAttributes(cwStyle, true);
+                    results.setText("");
+                    for (int x = 0; x < n; ++x) {
+                        results.setText(results.getText() + jokes[x] + "\n\n");
+                        results.setText(results.getText() + punch[x] + "\n\n");
+                    }
                 }
 
             }
@@ -247,5 +261,17 @@ public class Jokes implements ActionListener {
     public static void main(String[] args) {
         Jokes j = new Jokes();
     }
+
+
+    public boolean errorControl(String a){
+        Pattern pattern = Pattern.compile("[^0-9]");
+        Matcher matcher = pattern.matcher(a);
+        boolean matchFound = matcher.find();
+        if(matchFound) {
+            System.out.println("Please only type in numbers 1-10");
+        }
+        return matchFound;
+    }
 }
+
 
